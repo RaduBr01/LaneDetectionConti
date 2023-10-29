@@ -1,9 +1,10 @@
 import cv2
 import numpy as np
 
-
-
-
+left_top_x = 0
+left_bottom_x = 0
+right_top_x = 450
+right_bottom_x = 450
 
 cam = cv2.VideoCapture('Lane Detection Test Video-01.mp4')
 
@@ -66,23 +67,31 @@ while True:
     left_line = np.polynomial.polynomial.polyfit(left_xs, left_ys, deg=1)
     right_line = np.polynomial.polynomial.polyfit(right_xs, right_ys, deg=1)
 
-    # print(left_line)
-
     left_top_y = 0
     left_bottom_y = height
     right_top_y = 0
     right_bottom_y = height
 
-    left_top_x = int((left_top_y - left_line[0]) / left_line[1])
-    left_bottom_x = int((left_bottom_y - left_line[0]) / left_line[1])
-    right_top_x = int((right_top_y - right_line[0]) / right_line[1])
-    right_bottom_x = int((right_bottom_y - right_line[0]) / right_line[1])
+    left_top_xx = int((left_top_y - left_line[0]) / left_line[1])
+    left_bottom_xx = int((left_bottom_y - left_line[0]) / left_line[1])
+    right_top_xx = int((right_top_y - right_line[0]) / right_line[1])
+    right_bottom_xx = int((right_bottom_y - right_line[0]) / right_line[1])
 
-    # print(left_top_x, left_bottom_x)
+    if 0 <= left_top_xx < width // 2:
+        left_top_x = left_top_xx
 
+    if 0 <= left_bottom_xx < width // 2:
+        left_bottom_x = left_bottom_xx
+
+    if width // 2 <= right_bottom_xx < width:
+        right_bottom_x = right_bottom_xx
+
+    if width // 2 < right_top_xx < width:
+        right_top_x = right_top_xx
+
+    print(right_top_xx, right_bottom_xx)
     cv2.line(binarized_edge, (left_top_x, left_top_y), (left_bottom_x, left_bottom_y), (200, 0, 0), 5)
     cv2.line(binarized_edge, (right_top_x, right_top_y), (right_bottom_x, right_bottom_y), (100, 0, 0), 5)
-    # y=ax+b x=(y-b)/a
 
     final_left_lane = np.zeros((width, height), dtype=np.uint8)
 
